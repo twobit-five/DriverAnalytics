@@ -167,7 +167,7 @@ fun MainContent() {
                 topBar = {
                     TopAppBar(
                         title = {
-                            Text(text = "Drivers Analytics")
+                            Text(text = "Driver Analytics")
                         },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -191,7 +191,7 @@ fun MainContent() {
                                 .padding(top = 16.dp)
                         ) {
                             Text(  // Background text
-                                text = "Welcome to Drivers Analytics",
+                                text = "Welcome to Driver Analytics",
                                 //style = MaterialTheme.typography.h6,
                             )
 

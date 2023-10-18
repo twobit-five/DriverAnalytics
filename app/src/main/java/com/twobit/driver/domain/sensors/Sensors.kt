@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class LightSensor @Inject constructor(
     context: Context,
-    private val repository: SensorDataRepository
+    repository: SensorDataRepository
 ): AndroidSensor(
     context = context,
     sensorFeature = PackageManager.FEATURE_SENSOR_LIGHT,
@@ -20,7 +20,7 @@ class LightSensor @Inject constructor(
 
 class AccelerometerSensor @Inject constructor(
     context: Context,
-    private val repository: SensorDataRepository
+    repository: SensorDataRepository
 ) : AndroidSensor(
     context = context,
     sensorFeature = PackageManager.FEATURE_SENSOR_ACCELEROMETER,
@@ -31,7 +31,7 @@ class AccelerometerSensor @Inject constructor(
 
 class GyroscopeSensor @Inject constructor(
     context: Context,
-    private val repository: SensorDataRepository
+    repository: SensorDataRepository
 ) : AndroidSensor(
     context = context,
     sensorFeature = PackageManager.FEATURE_SENSOR_GYROSCOPE,
@@ -41,7 +41,7 @@ class GyroscopeSensor @Inject constructor(
 
 class MagnetometerSensor @Inject constructor(
     context: Context,
-    private val repository: SensorDataRepository
+    repository: SensorDataRepository
 ) : AndroidSensor(
     context = context,
     sensorFeature = PackageManager.FEATURE_SENSOR_COMPASS,
@@ -51,7 +51,7 @@ class MagnetometerSensor @Inject constructor(
 
 class BarometerSensor @Inject constructor(
     context: Context,
-    private val repository: SensorDataRepository
+    repository: SensorDataRepository
 ) : AndroidSensor(
     context = context,
     sensorFeature = PackageManager.FEATURE_SENSOR_BAROMETER,
@@ -61,7 +61,7 @@ class BarometerSensor @Inject constructor(
 
 class GravitySensor @Inject constructor(
     context: Context,
-    private val repository: SensorDataRepository
+    repository: SensorDataRepository
 ) : AndroidSensor(
     context = context,
     //sensorFeature = PackageManager.FEATURE_SENSOR_GRAVITY,
@@ -72,7 +72,7 @@ class GravitySensor @Inject constructor(
 
 class HeadingSensor @Inject constructor(
     context: Context,
-    private val repository: SensorDataRepository
+    repository: SensorDataRepository
 ) : AndroidSensor(
     context = context,
     sensorFeature = PackageManager.FEATURE_SENSOR_COMPASS,
@@ -82,7 +82,7 @@ class HeadingSensor @Inject constructor(
 
 class AmbientTemperatureSensor @Inject constructor(
     context: Context,
-    private val repository: SensorDataRepository
+    repository: SensorDataRepository
 ) : AndroidSensor(
     context = context,
     sensorFeature = PackageManager.FEATURE_SENSOR_AMBIENT_TEMPERATURE,
@@ -92,7 +92,7 @@ class AmbientTemperatureSensor @Inject constructor(
 
 class RelativeHumiditySensor @Inject constructor(
     context: Context,
-    private val repository: SensorDataRepository
+    repository: SensorDataRepository
 ) : AndroidSensor(
     context = context,
     sensorFeature = PackageManager.FEATURE_SENSOR_RELATIVE_HUMIDITY,
