@@ -17,11 +17,11 @@ Application designed to collect drivers data for collection of driving behaviors
 Not yet implemented
 
 ## Future Enhancements
-[] display Sensor Data from screen
-[] implement settings for app.
-[] data exportation for model training.
-[] connect to OBD-II 
-[] Limit sensor data collection during driving activity only.
+[ ] display Sensor Data from screen
+[ ] implement settings for app.
+[ ] data exportation for model training.
+[ ] connect to OBD-II 
+[ ] Limit sensor data collection during driving activity only.
 
 ## Current Screenshots
 ![Screenshot_20231018-125754_Driver Analytics](https://github.com/twobit-five/DriverAnalytics/assets/69398054/1dde29e8-9f13-4274-a9b1-3c2d3fbe6149)
