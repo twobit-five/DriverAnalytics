@@ -22,6 +22,7 @@ Not yet implemented
 - [ ] data exportation for model training.
 - [ ] connect to OBD-II 
 - [ ] Limit sensor data collection during driving activity only.
+- [ ] Implement GPS location tracking as seperate data collection
 
 ## Current Screenshots
 ![Screenshot_20231018-125754_Driver Analytics](https://github.com/twobit-five/DriverAnalytics/assets/69398054/4530e8ec-fa16-4dcf-97d3-335489f7d52b)
