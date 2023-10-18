@@ -19,19 +19,23 @@ Not Yet Implemented.
 
 ## OBD-II Data
 Not yet implemented
-The idea is to connect to OBD-II addapter with a specialized hardwaret to collect vehicle related data.
+- The idea is to connect to OBD-II addapter with a specialized hardwaret to collect vehicle related data.
 
 ## Remote Sensors
 Not Yet Implemented.
-Its possible to collect data from additional specialized sensors via bluetooth or other means.  There are various possibilities.
+- Its possible to collect data from additional specialized sensors via bluetooth or other means.  There are various possibilities.
 
 ## Camera Data
 Not Yet Implemented.
-Various "visual" data collection methods could be added in future.  Although visual data requires additional bandwidth and processing needs, so this will need to be carefully thought out.
+- Various "visual" data collection methods could be added in future.  Although visual data requires additional bandwidth and processing needs, so this will need to be carefully thought out.
 
 ## Biometric Data
 Not yet Implemented.
-Many data points can be added by integerating with google health or samsung fit.  Currently Google is developing Health Connect which may be used in future to obtain additional data points such as Heart Rate, body temperature, etc.
+- Many data points can be added by integerating with google health or samsung fit.  Currently Google is developing Health Connect which may be used in future to obtain additional data points such as Heart Rate, body temperature, etc.
+
+## Vehicle Sound Data
+Not yet implemented
+- Collection of data from different sound sources (engine, interiror) to assist in making predictions.
 
 ## Future Enhancements
 - [ ] display Sensor Data from screen
