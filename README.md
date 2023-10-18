@@ -24,9 +24,9 @@ Not yet implemented
 - [ ] Limit sensor data collection during driving activity only.
 
 ## Current Screenshots
-![Screenshot_20231018-125754_Driver Analytics](https://github.com/twobit-five/DriverAnalytics/assets/69398054/1dde29e8-9f13-4274-a9b1-3c2d3fbe6149)
+![Screenshot_20231018-125754_Driver Analytics](https://github.com/twobit-five/DriverAnalytics/assets/69398054/4530e8ec-fa16-4dcf-97d3-335489f7d52b)
 
-![Screenshot_20231018-125748_Driver Analytics](https://github.com/twobit-five/DriverAnalytics/assets/69398054/2c697c5b-b0ec-470b-b2e0-6d061713cf5b)
+![Screenshot_20231018-125748_Driver Analytics](https://github.com/twobit-five/DriverAnalytics/assets/69398054/6826cc92-4118-4d4e-925a-45f84f694001)
 
 ## Screnn shot of database from app
 ![image](https://github.com/twobit-five/DriverAnalytics/assets/69398054/df566f31-61aa-4ddb-b37e-ca416869387a)
