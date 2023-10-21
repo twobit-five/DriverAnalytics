@@ -14,8 +14,14 @@ Application designed to collect drivers data for collection of driving behaviors
 - Relative Humidity
 
 ## Location Data
-Not Yet Implemented.
-- GPS data could further enhance the richness of the data collected.
+Partially Implemented.
+- Currently GPS data is collected and stored to local database.
+
+Please Note:
+Permissions must currently be accepted for location prior to running the app.
+
+****![Screenshot_20231021_132430](https://github.com/twobit-five/DriverAnalytics/assets/69398054/8f7a6fb9-1db0-497f-ab78-20b33b8e3b03)
+
 
 ## OBD-II Data
 Not yet implemented
