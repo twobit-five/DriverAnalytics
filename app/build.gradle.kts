@@ -93,6 +93,9 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+
+    // Location Services
+    implementation("com.google.android.gms:play-services-location:20.0.0")
 }
 
 // Allow references to generated code

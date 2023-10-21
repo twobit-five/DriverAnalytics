@@ -9,5 +9,4 @@ interface SensorDataDao {
 
     @Insert
     suspend fun insert(sensorData: SensorData)
-
 }

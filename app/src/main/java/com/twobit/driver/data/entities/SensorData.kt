@@ -12,8 +12,8 @@ import com.google.gson.reflect.TypeToken
 data class SensorData(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val sensorType: String,
     val timestamp: Long,
+    val sensorType: String,
     val values: List<Float>
 )
 

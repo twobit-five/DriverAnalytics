@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import com.twobit.driver.data.entities.SensorData
-import com.twobit.driver.data.repository.SensorDataRepository
+import com.twobit.driver.data.repository.Repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ abstract class AndroidSensor(
     private val context: Context,
     private val sensorFeature: String?,
     sensorType: Int,
-    private val repository: SensorDataRepository
+    private val repository: Repository
 ): MeasurableSensor(sensorType), SensorEventListener {
 
     override val doesSensorExist: Boolean

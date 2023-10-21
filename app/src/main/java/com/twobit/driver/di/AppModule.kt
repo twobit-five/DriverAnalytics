@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.room.Room
 
 import com.twobit.driver.data.database.AppDatabase
-import com.twobit.driver.data.repository.SensorDataRepository
+import com.twobit.driver.data.repository.Repository
 import com.twobit.driver.domain.sensors.AccelerometerSensor
 import com.twobit.driver.domain.sensors.AmbientTemperatureSensor
 import com.twobit.driver.domain.sensors.BarometerSensor
@@ -81,11 +81,10 @@ object AppModule {
         ).build()
     }
 
-
     @Provides
     @Singleton
-    fun providesRepository(db: AppDatabase): SensorDataRepository {
-        return SensorDataRepository(db.sensorDataDao())
+    fun providesRepository(db: AppDatabase): Repository {
+        return Repository(db.sensorDataDao(), db.locationDataDao())
     }
 
 
@@ -93,7 +92,7 @@ object AppModule {
     @LightSensorQualifier
     fun provideLightSensor(
         context: Context,
-        repository: SensorDataRepository
+        repository: Repository
     ): MeasurableSensor {
         return LightSensor(context, repository)
     }
@@ -103,7 +102,7 @@ object AppModule {
     @AccelerometerSensorQualifier
     fun provideAccelerometerSensor(
         context: Context,
-        repository: SensorDataRepository
+        repository: Repository
     ): MeasurableSensor {
         return AccelerometerSensor(context, repository)
     }
@@ -113,7 +112,7 @@ object AppModule {
     @GyroscopeSensorQualifier
     fun provideGyroscopeSensor(
         context: Context,
-        repository: SensorDataRepository
+        repository: Repository
     ): MeasurableSensor {
         return GyroscopeSensor(context, repository)
     }
@@ -122,7 +121,7 @@ object AppModule {
     @MagnetometerSensorQualifier
     fun provideMagnetometerSensor(
         context: Context,
-        repository: SensorDataRepository
+        repository: Repository
     ): MeasurableSensor {
         return MagnetometerSensor(context, repository)
     }
@@ -131,7 +130,7 @@ object AppModule {
     @BarometerSensorQualifier
     fun provideBarometerSensor(
         context: Context,
-        repository: SensorDataRepository
+        repository: Repository
     ): MeasurableSensor {
         return BarometerSensor(context, repository)
     }
@@ -140,7 +139,7 @@ object AppModule {
     @GravitySensorQualifier
     fun provideGravitySensor(
         context: Context,
-        repository: SensorDataRepository
+        repository: Repository
     ): MeasurableSensor {
         return GravitySensor(context, repository)
     }
@@ -149,7 +148,7 @@ object AppModule {
     @HeadingSensorQualifier
     fun provideHeadingSensor(
         context: Context,
-        repository: SensorDataRepository
+        repository: Repository
     ): MeasurableSensor {
         return HeadingSensor(context, repository)
     }
@@ -158,7 +157,7 @@ object AppModule {
     @AmbientTemperatureSensorQualifier
     fun provideAmbientTemperatureSensor(
         context: Context,
-        repository: SensorDataRepository
+        repository: Repository
     ): MeasurableSensor {
         return AmbientTemperatureSensor(context, repository)
     }
@@ -167,7 +166,7 @@ object AppModule {
     @RelativeHumiditySensorQualifier
     fun provideRelativeHumiditySensor(
         context: Context,
-        repository: SensorDataRepository
+        repository: Repository
     ): MeasurableSensor {
         return RelativeHumiditySensor(context, repository)
     }
