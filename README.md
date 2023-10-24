@@ -69,6 +69,8 @@ Note:
 ![image](https://github.com/twobit-five/DriverAnalytics/assets/69398054/df566f31-61aa-4ddb-b37e-ca416869387a)
 
 ## Sceen shot of location data_data
+Note:
+This is example output of a single update... Updates occur frequently and local database will have many more entries
 ![Screenshot 2023-10-23 233527](https://github.com/twobit-five/DriverAnalytics/assets/69398054/945e9578-efa8-4fbf-bcbd-13011dcec1a4)
 
 
