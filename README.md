@@ -50,6 +50,7 @@ Not yet implemented
 - [ ] connect to OBD-II 
 - [ ] Limit sensor data collection during driving activity only.
 - [ ] Implement GPS location tracking as seperate data collection
+- [ ] Permission Manager
 
 ## Current Screenshots
 
