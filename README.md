@@ -52,10 +52,24 @@ Not yet implemented
 - [ ] Implement GPS location tracking as seperate data collection
 
 ## Current Screenshots
+
+### Settings Screen
+Note:
+- Not sure why the dark theme has disapeared.
+- These settings currently have no impact on the app. (Need to implemplent, just wanted the option)
+
+![Screenshot_20231023-232455_Driver Analytics](https://github.com/twobit-five/DriverAnalytics/assets/69398054/65e31417-78b1-4f0d-862d-60c177429127)
+
+
 ![Screenshot_20231018-125754_Driver Analytics](https://github.com/twobit-five/DriverAnalytics/assets/69398054/4530e8ec-fa16-4dcf-97d3-335489f7d52b)
 
 ![Screenshot_20231018-125748_Driver Analytics](https://github.com/twobit-five/DriverAnalytics/assets/69398054/6826cc92-4118-4d4e-925a-45f84f694001)
 
-## Screnn shot of database from app
+## Screen shot of sensor_data table from the database
 ![image](https://github.com/twobit-five/DriverAnalytics/assets/69398054/df566f31-61aa-4ddb-b37e-ca416869387a)
+
+## Sceen shot of location data_data
+![Screenshot 2023-10-23 233527](https://github.com/twobit-five/DriverAnalytics/assets/69398054/945e9578-efa8-4fbf-bcbd-13011dcec1a4)
+
+
 
