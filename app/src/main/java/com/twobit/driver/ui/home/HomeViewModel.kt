@@ -1,4 +1,4 @@
-package com.twobit.driver.ui.main
+package com.twobit.driver.ui.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     @LightSensorQualifier
     private val lightSensor: MeasurableSensor
 ): ViewModel() {

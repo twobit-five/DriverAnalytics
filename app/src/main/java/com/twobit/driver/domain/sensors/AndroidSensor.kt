@@ -70,10 +70,12 @@ abstract class AndroidSensor(
             SensorData(
                 sensorType = it.stringType,
                 timestamp = System.currentTimeMillis(),
-                values = event.values.toList()
+                values = event.values.toList(),
+                accuracy = event.accuracy
             )
         }
         // Save it to the database
+        //TODO report useful logging data.
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 if (sensorData != null) {
@@ -89,5 +91,6 @@ abstract class AndroidSensor(
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         // Do nothing
+
     }
 }

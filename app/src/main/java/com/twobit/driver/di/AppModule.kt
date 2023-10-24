@@ -6,6 +6,7 @@ import androidx.room.Room
 
 import com.twobit.driver.data.database.AppDatabase
 import com.twobit.driver.data.repository.Repository
+import com.twobit.driver.domain.bluetooth.BluetoothBroadcastReceiver
 import com.twobit.driver.domain.sensors.AccelerometerSensor
 import com.twobit.driver.domain.sensors.AmbientTemperatureSensor
 import com.twobit.driver.domain.sensors.BarometerSensor
@@ -16,6 +17,8 @@ import com.twobit.driver.domain.sensors.LightSensor
 import com.twobit.driver.domain.sensors.MagnetometerSensor
 import com.twobit.driver.domain.sensors.MeasurableSensor
 import com.twobit.driver.domain.sensors.RelativeHumiditySensor
+import com.twobit.driver.domain.settings.AppSettingsSerializer
+import com.twobit.driver.domain.settings.SettingsManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -85,6 +88,27 @@ object AppModule {
     @Singleton
     fun providesRepository(db: AppDatabase): Repository {
         return Repository(db.sensorDataDao(), db.locationDataDao())
+    }
+
+    @Provides
+    @Singleton
+    fun providesBluetoothBroadcastReceiver(): BluetoothBroadcastReceiver {
+        return BluetoothBroadcastReceiver()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppSettingsSerializer(): AppSettingsSerializer {
+        return AppSettingsSerializer
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingsManager(
+        context: Context,
+        appSettingsSerializer: AppSettingsSerializer
+    ): SettingsManager {
+        return SettingsManager(context, appSettingsSerializer)
     }
 
 

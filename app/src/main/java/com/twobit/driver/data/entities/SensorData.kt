@@ -14,7 +14,9 @@ data class SensorData(
     val id: Int = 0,
     val timestamp: Long,
     val sensorType: String,
-    val values: List<Float>
+    val values: List<Float>,
+    //TODO CHANGE TO STRING
+    val accuracy: Int
 )
 
 
