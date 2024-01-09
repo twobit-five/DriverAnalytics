@@ -2,17 +2,20 @@ package com.twobit.driver.ui.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.twobit.driver.domain.settings.SensorType
-import com.twobit.driver.domain.settings.UnitType
-
+import androidx.navigation.compose.rememberNavController
+import com.twobit.driver.settings.SensorType
+import com.twobit.driver.settings.UnitType
 
 @Composable
 fun SettingsScreen(
@@ -26,9 +29,11 @@ fun SettingsScreen(
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(top = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Welcome to Settings Menu",
+                text = "Settings Menu",
                 modifier = Modifier.padding(8.dp)
             )
             settings?.let {
@@ -38,26 +43,90 @@ fun SettingsScreen(
                         viewModel.updateSettings(it.copy(unitType = newUnitType))
                     }
                 )
-                DriverAgeSetting(
-                    currentAge = it.driversAge,
-                    onAgeChanged = { newAge ->
-                        viewModel.updateSettings(it.copy(driversAge = newAge))
+
+                Card(modifier = Modifier.padding(8.dp)) {
+                    Column {
+                        Text(
+                            text = "Environment Sensors",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        SensorToggleSettings(
+                            currentSensorSettings = it.sensors.filterKeys { sensorType ->
+                                sensorType in listOf(SensorType.LIGHT, SensorType.PRESSURE, SensorType.AMBIENT_TEMPERATURE, SensorType.RELATIVE_HUMIDITY)
+                            },
+                            onSensorToggled = { sensorType, isEnabled ->
+                                val updatedSensors = it.sensors.toMutableMap().apply {
+                                    this[sensorType] = isEnabled
+                                }
+                                viewModel.updateSettings(it.copy(sensors = updatedSensors))
+                            }
+                        )
                     }
-                )
-                SensorToggleSettings(
-                    currentSensorSettings = it.sensors,
-                    onSensorToggled = { sensorType, isEnabled ->
-                        val updatedSensors = it.sensors.toMutableMap().apply {
-                            this[sensorType] = isEnabled
-                        }
-                        viewModel.updateSettings(it.copy(sensors = updatedSensors))
+                }
+
+                Card(modifier = Modifier.padding(8.dp)) {
+                    Column {
+                        Text(
+                            text = "Motion Sensors",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        SensorToggleSettings(
+                            currentSensorSettings = it.sensors.filterKeys { sensorType ->
+                                sensorType in listOf(SensorType.ACCELEROMETER, SensorType.GRAVITY, SensorType.GYROSCOPE, SensorType.ACCELERATION)
+                            },
+                            onSensorToggled = { sensorType, isEnabled ->
+                                val updatedSensors = it.sensors.toMutableMap().apply {
+                                    this[sensorType] = isEnabled
+                                }
+                                viewModel.updateSettings(it.copy(sensors = updatedSensors))
+                            }
+                        )
                     }
-                )
+                }
+
+                Card(modifier = Modifier.padding(8.dp)) {
+                    Column {
+                        Text(
+                            text = "Position Sensors",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        SensorToggleSettings(
+                            currentSensorSettings = it.sensors.filterKeys { sensorType ->
+                                sensorType in listOf(SensorType.PROXIMITY, SensorType.MAGNETIC_FIELD)
+                            },
+                            onSensorToggled = { sensorType, isEnabled ->
+                                val updatedSensors = it.sensors.toMutableMap().apply {
+                                    this[sensorType] = isEnabled
+                                }
+                                viewModel.updateSettings(it.copy(sensors = updatedSensors))
+                            }
+                        )
+                    }
+                }
+
+                Card(modifier = Modifier.padding(8.dp)) {
+                    Column {
+                        Text(
+                            text = "Location Sensors",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        SensorToggleSettings(
+                            currentSensorSettings = it.sensors.filterKeys { sensorType ->
+                                sensorType == SensorType.GPS
+                            },
+                            onSensorToggled = { sensorType, isEnabled ->
+                                val updatedSensors = it.sensors.toMutableMap().apply {
+                                    this[sensorType] = isEnabled
+                                }
+                                viewModel.updateSettings(it.copy(sensors = updatedSensors))
+                            }
+                        )
+                    }
+                }
             }
         }
     }
 }
-
 
 @Composable
 fun SensorToggleSettings(
@@ -84,27 +153,6 @@ fun SensorToggleSettings(
     }
 }
 
-
-@Composable
-fun DriverAgeSetting(currentAge: Int, onAgeChanged: (Int) -> Unit) {
-    var ageText by remember { mutableStateOf(currentAge.toString()) }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = "Driver Age")
-        BasicTextField(
-            value = ageText,
-            onValueChange = { value ->
-                ageText = value
-                onAgeChanged(value.toIntOrNull() ?: currentAge)
-            }
-        )
-    }
-}
-
 @Composable
 fun UnitTypeSetting(currentUnitType: UnitType, onUnitTypeSelected: (UnitType) -> Unit) {
     Row(
@@ -126,6 +174,12 @@ fun UnitTypeSetting(currentUnitType: UnitType, onUnitTypeSelected: (UnitType) ->
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsScreenPreview() {
+    SettingsScreen(navController = rememberNavController())
 }
 
 

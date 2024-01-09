@@ -14,24 +14,25 @@ data class SensorData(
     val id: Int = 0,
     val timestamp: Long,
     val sensorType: String,
+    val sensorCategory: String,
+    val measurementName: String,
     val values: List<Float>,
-    //TODO CHANGE TO STRING
+    val unitOfMeasurement: String,
     val accuracy: Int
-)
-
+) {
+}
 
 class SensorDataTypeConverters {
+    private val gson = Gson()
 
     @TypeConverter
     fun fromValuesList(values: List<Float>): String {
-        val gson = Gson()
         val type = object : TypeToken<List<Float>>() {}.type
         return gson.toJson(values, type)
     }
 
     @TypeConverter
     fun toValuesList(valuesString: String): List<Float> {
-        val gson = Gson()
         val type = object : TypeToken<List<Float>>() {}.type
         return gson.fromJson(valuesString, type)
     }

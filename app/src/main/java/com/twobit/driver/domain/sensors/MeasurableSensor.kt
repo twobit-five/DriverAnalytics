@@ -1,7 +1,9 @@
 package com.twobit.driver.domain.sensors
 
 abstract class MeasurableSensor(
-    protected val sensorType: Int
+    protected val sensorType: Int,
+    protected val measurementName: String,
+    protected val unitOfMeasurement: String,
 ) {
 
     protected var onSensorValuesChanged: ((List<Float>) -> Unit)? = null

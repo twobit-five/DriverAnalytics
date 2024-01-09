@@ -1,14 +1,20 @@
 package com.twobit.driver.ui.main
 
+import android.Manifest
+import android.provider.Settings
 import com.twobit.driver.domain.services.SensorService
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -50,10 +56,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.twobit.driver.domain.bluetooth.BluetoothBroadcastReceiver
-import com.twobit.driver.domain.settings.SettingsManager
+import com.twobit.driver.settings.SettingsManager
+import com.twobit.driver.ui.event.EventScreen
+import com.twobit.driver.ui.event.EventViewModel
 import com.twobit.driver.ui.home.HomeScreen
 import com.twobit.driver.ui.home.HomeViewModel
 import com.twobit.driver.ui.info.InformationScreen
+import com.twobit.driver.ui.permisions.CameraPermissionTextProvider
+import com.twobit.driver.ui.permisions.PermissionDialog
+import com.twobit.driver.ui.permisions.PermissionViewModel
+import com.twobit.driver.ui.permisions.PhoneCallPermissionTextProvider
+import com.twobit.driver.ui.permisions.RecordAudioPermissionTextProvider
 import com.twobit.driver.ui.settings.SettingsScreen
 import com.twobit.driver.ui.settings.SettingsViewModel
 import com.twobit.driver.ui.theme.M3NavigationDrawerTheme
@@ -72,11 +85,17 @@ data class NavigationItem(
 
 //TODO move these to a separate file?
 const val ROUTE_HOME = "home"
+const val ROUTE_EVENT = "event"
 const val ROUTE_INFORMATION = "information"
 const val ROUTE_SETTINGS = "settings"
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val permissionsToRequest = arrayOf(
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.CALL_PHONE,
+    )
 
     @Inject
     lateinit var bluetoothBroadcastReceiver: BluetoothBroadcastReceiver
@@ -90,28 +109,77 @@ class MainActivity : ComponentActivity() {
 
         val serviceIntent = Intent(this, SensorService::class.java)
 
-        // Register Bluetooth broadcast receiver
         val intentFilter = IntentFilter().apply {
             addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
         }
         registerReceiver(bluetoothBroadcastReceiver, intentFilter)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // For Android Oreo and later, use startForegroundService()
             startForegroundService(serviceIntent)
         } else {
-            // For earlier versions, use startService()
             startService(serviceIntent)
         }
 
         setContent {
             M3NavigationDrawerTheme {
 
+
+                //TODO create a permision Manager class to handle this. (Which can be used in other activities)
+                val permissionViewModel = viewModel<PermissionViewModel>()
+                val dialogQueue = permissionViewModel.visiblePermissionDialogQueue
+
+                val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestMultiplePermissions()
+                ) { perms ->
+                    permissionsToRequest.forEach { permission ->
+                        val isGranted = perms[permission] == true
+                        permissionViewModel.onPermissionResult(permission, isGranted)
+                    }
+                }
+
+                dialogQueue
+                    .reversed()
+                    .forEach { permission ->
+                        PermissionDialog(
+                            permissionTextProvider = when (permission) {
+                                Manifest.permission.CAMERA -> {
+                                    CameraPermissionTextProvider()
+                                }
+                                Manifest.permission.RECORD_AUDIO -> {
+                                    RecordAudioPermissionTextProvider()
+                                }
+                                Manifest.permission.CALL_PHONE -> {
+                                    PhoneCallPermissionTextProvider()
+                                }
+                                else -> return@forEach
+                            },
+                            isPermanentlyDeclined = !shouldShowRequestPermissionRationale(
+                                permission
+                            ),
+                            onDismiss = permissionViewModel::dismissDialog,
+                            onOkClick = {
+                                permissionViewModel.dismissDialog()
+                                multiplePermissionResultLauncher.launch(
+                                    arrayOf(permission)
+                                )
+                            },
+                            onGoToAppSettingsClick = ::openAppSettings
+                        )
+                    }
+                }
+
                 MainContent()
             }
         }
     }
+
+fun Activity.openAppSettings() {
+        Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", packageName, null)
+        ).also(::startActivity)
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -121,6 +189,7 @@ fun MainContent() {
     val navController = rememberNavController()
 
     val homeViewModel = viewModel<HomeViewModel>()
+    val eventViewModel = viewModel<EventViewModel>()
     val settingsViewModel = viewModel<SettingsViewModel>()
 
     val items = listOf(
@@ -129,6 +198,12 @@ fun MainContent() {
             selectedIcon = Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home,
             route = ROUTE_HOME
+        ),
+        NavigationItem(
+            title = "Event",
+            selectedIcon = Icons.Filled.Info,
+            unselectedIcon = Icons.Outlined.Info,
+            route = ROUTE_EVENT
         ),
         NavigationItem(
             title = "Information",
@@ -226,6 +301,14 @@ fun MainContent() {
                             )
                         }
                         composable(
+                            route = ROUTE_EVENT
+                        ) {
+                            EventScreen(
+                                navController = navController,
+                                viewModel = eventViewModel,
+                            )
+                        }
+                        composable(
                             route = ROUTE_INFORMATION
                         ) {
                             InformationScreen(
@@ -255,6 +338,5 @@ fun MainContent() {
 fun MainContentPreview() {
     MainContent()
 }
-
 
 

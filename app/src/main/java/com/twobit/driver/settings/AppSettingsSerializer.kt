@@ -1,4 +1,4 @@
-package com.twobit.driver.domain.settings
+package com.twobit.driver.settings
 
 import androidx.datastore.core.Serializer
 import kotlinx.serialization.SerializationException

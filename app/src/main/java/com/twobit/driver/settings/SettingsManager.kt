@@ -1,4 +1,4 @@
-package com.twobit.driver.domain.settings
+package com.twobit.driver.settings
 
 import android.content.Context
 import android.util.Log
@@ -28,7 +28,7 @@ class SettingsManager @Inject constructor(
         .catch { exception ->
             if (exception is IOException) {
                 Log.e(TAG, "Error reading settings: ", exception)
-                emit(appSettingsSerializer.defaultValue)
+                emit(AppSettingsSerializer.defaultValue)
             } else {
                 throw exception
             }
@@ -43,6 +43,11 @@ class SettingsManager @Inject constructor(
             Log.d(TAG, "Updating settings from: $currentSettings to: $newSettings")
             newSettings
         }
+    }
+
+    suspend fun getEnabledSensors(): Map<SensorType, Boolean> {
+        val settings = getSettings()
+        return settings.sensors.filterValues { it }
     }
 
     companion object {

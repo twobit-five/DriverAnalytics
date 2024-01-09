@@ -11,7 +11,6 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
 import com.twobit.driver.data.entities.LocationData
-import com.twobit.driver.domain.sensors.AccelerometerSensor
 import com.twobit.driver.domain.sensors.LightSensor
 import com.twobit.driver.data.repository.Repository
 import com.twobit.driver.domain.location.DefaultLocationClient
@@ -20,8 +19,9 @@ import com.twobit.driver.domain.sensors.AmbientTemperatureSensor
 import com.twobit.driver.domain.sensors.BarometerSensor
 import com.twobit.driver.domain.sensors.GravitySensor
 import com.twobit.driver.domain.sensors.GyroscopeSensor
-import com.twobit.driver.domain.sensors.HeadingSensor
+import com.twobit.driver.domain.sensors.LinearAccelerationSensor
 import com.twobit.driver.domain.sensors.MagnetometerSensor
+import com.twobit.driver.domain.sensors.ProximitySensor
 import com.twobit.driver.domain.sensors.RelativeHumiditySensor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -38,7 +38,9 @@ public class SensorService : Service() {
     @Inject
     lateinit var lightSensor: LightSensor
     @Inject
-    lateinit var accelerometerSensor: AccelerometerSensor
+    lateinit var accelerometerSensor: LinearAccelerationSensor
+    @Inject
+    lateinit var gravitySensor: GravitySensor
     @Inject
     lateinit var gyroscopeSensor: GyroscopeSensor
     @Inject
@@ -46,13 +48,12 @@ public class SensorService : Service() {
     @Inject
     lateinit var barometerSensor: BarometerSensor
     @Inject
-    lateinit var gravitySensor: GravitySensor
-    @Inject
-    lateinit var headingSensor: HeadingSensor
-    @Inject
     lateinit var ambientTemperatureSensor: AmbientTemperatureSensor
     @Inject
     lateinit var relativeHumiditySensor: RelativeHumiditySensor
+    @Inject
+    lateinit var proximitySensor: ProximitySensor
+
 
     @Inject
     lateinit var repository: Repository
@@ -104,9 +105,9 @@ public class SensorService : Service() {
         magnetometerSensor.startListening()
         barometerSensor.startListening()
         gravitySensor.startListening()
-        headingSensor.startListening()
         ambientTemperatureSensor.startListening()
         relativeHumiditySensor.startListening()
+        proximitySensor.startListening()
 
         return START_NOT_STICKY
     }
@@ -121,9 +122,9 @@ public class SensorService : Service() {
         magnetometerSensor.stopListening()
         barometerSensor.stopListening()
         gravitySensor.stopListening()
-        headingSensor.stopListening()
         ambientTemperatureSensor.stopListening()
         relativeHumiditySensor.stopListening()
+        proximitySensor.stopListening()
 
         serviceScope.cancel()
     }

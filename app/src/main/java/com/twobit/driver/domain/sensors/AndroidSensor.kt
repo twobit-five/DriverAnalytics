@@ -15,8 +15,11 @@ abstract class AndroidSensor(
     private val context: Context,
     private val sensorFeature: String?,
     sensorType: Int,
-    private val repository: Repository
-): MeasurableSensor(sensorType), SensorEventListener {
+    private val sensorCategory: String,
+    measurementName: String,
+    unitOfMeasurement: String,
+    private val repository: Repository,
+): MeasurableSensor(sensorType, measurementName, unitOfMeasurement), SensorEventListener {
 
     override val doesSensorExist: Boolean
         get() = sensorFeature?.let { feature ->
@@ -71,9 +74,13 @@ abstract class AndroidSensor(
                 sensorType = it.stringType,
                 timestamp = System.currentTimeMillis(),
                 values = event.values.toList(),
-                accuracy = event.accuracy
+                accuracy = event.accuracy,
+                sensorCategory = sensorCategory,
+                measurementName = measurementName,
+                unitOfMeasurement = unitOfMeasurement
             )
         }
+
         // Save it to the database
         //TODO report useful logging data.
         CoroutineScope(Dispatchers.IO).launch {

@@ -73,7 +73,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    
+    implementation("androidx.compose.material:material:1.2.0")
+
+
     //Dagger Hilt
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
@@ -105,6 +107,9 @@ dependencies {
     implementation("androidx.datastore:datastore:1.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+
+    //From Permission Manager Tutorial
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
 }
 
 // Allow references to generated code

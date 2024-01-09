@@ -2,8 +2,8 @@ package com.twobit.driver.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.twobit.driver.domain.settings.AppSettings
-import com.twobit.driver.domain.settings.SettingsManager
+import com.twobit.driver.settings.AppSettings
+import com.twobit.driver.settings.SettingsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

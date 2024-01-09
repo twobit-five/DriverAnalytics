@@ -7,18 +7,17 @@ import androidx.room.Room
 import com.twobit.driver.data.database.AppDatabase
 import com.twobit.driver.data.repository.Repository
 import com.twobit.driver.domain.bluetooth.BluetoothBroadcastReceiver
-import com.twobit.driver.domain.sensors.AccelerometerSensor
 import com.twobit.driver.domain.sensors.AmbientTemperatureSensor
 import com.twobit.driver.domain.sensors.BarometerSensor
 import com.twobit.driver.domain.sensors.GravitySensor
 import com.twobit.driver.domain.sensors.GyroscopeSensor
-import com.twobit.driver.domain.sensors.HeadingSensor
 import com.twobit.driver.domain.sensors.LightSensor
+import com.twobit.driver.domain.sensors.LinearAccelerationSensor
 import com.twobit.driver.domain.sensors.MagnetometerSensor
 import com.twobit.driver.domain.sensors.MeasurableSensor
 import com.twobit.driver.domain.sensors.RelativeHumiditySensor
-import com.twobit.driver.domain.settings.AppSettingsSerializer
-import com.twobit.driver.domain.settings.SettingsManager
+import com.twobit.driver.settings.AppSettingsSerializer
+import com.twobit.driver.settings.SettingsManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -87,7 +86,7 @@ object AppModule {
     @Provides
     @Singleton
     fun providesRepository(db: AppDatabase): Repository {
-        return Repository(db.sensorDataDao(), db.locationDataDao())
+        return Repository(db.sensorDataDao(), db.locationDataDao(), db.eventDao())
     }
 
     @Provides
@@ -128,7 +127,7 @@ object AppModule {
         context: Context,
         repository: Repository
     ): MeasurableSensor {
-        return AccelerometerSensor(context, repository)
+        return LinearAccelerationSensor(context, repository)
     }
 
 
@@ -166,15 +165,6 @@ object AppModule {
         repository: Repository
     ): MeasurableSensor {
         return GravitySensor(context, repository)
-    }
-
-    @Provides
-    @HeadingSensorQualifier
-    fun provideHeadingSensor(
-        context: Context,
-        repository: Repository
-    ): MeasurableSensor {
-        return HeadingSensor(context, repository)
     }
 
     @Provides
