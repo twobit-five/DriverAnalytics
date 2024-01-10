@@ -35,19 +35,23 @@ class SettingsManager @Inject constructor(
         }
 
     suspend fun getSettings(): AppSettings {
-        return settingsDataStore.data.first()
+        val settings = settingsDataStore.data.first()
+        Log.d(TAG, "Retrieved settings: $settings")
+        return settings
     }
 
     suspend fun updateSettings(newSettings: AppSettings) {
         settingsDataStore.updateData { currentSettings ->
-            Log.d(TAG, "Updating settings from: $currentSettings to: $newSettings")
+            Log.d(TAG, "Updating settings from: $currentSettings\n to: $newSettings")
             newSettings
         }
     }
 
     suspend fun getEnabledSensors(): Map<SensorType, Boolean> {
         val settings = getSettings()
-        return settings.sensors.filterValues { it }
+        val enabledSensors = settings.sensors.filterValues { it }
+        Log.d(TAG, "Retrieved enabled sensors: $enabledSensors")
+        return enabledSensors
     }
 
     companion object {

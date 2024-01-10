@@ -9,20 +9,17 @@ import com.twobit.driver.settings.SensorType
 import com.twobit.driver.settings.SettingsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 @HiltViewModel
 class EventViewModel @Inject constructor(
     private val repository: Repository,
     private val settingsManager: SettingsManager
 ) : ViewModel() {
-
-    val settingsFlow: StateFlow<AppSettings?> = settingsManager.settingsFlow
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     private val _isRecording = MutableStateFlow(false)
     val isRecording: StateFlow<Boolean> = _isRecording
@@ -39,6 +36,7 @@ class EventViewModel @Inject constructor(
     fun toggleRecording(eventType: String) {
         viewModelScope.launch {
             _isRecording.value = !_isRecording.value
+            Log.d(TAG, "Recording toggled: ${_isRecording.value}")
             if (_isRecording.value) {
                 _recordStartTime.value = System.currentTimeMillis()
             } else {
@@ -74,7 +72,12 @@ class EventViewModel @Inject constructor(
                     sensorDataList = filteredSensorDataList
                 )
                 repository.insertEvent(event)
+                Log.d(TAG, "Event created: $event")
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "EventViewModel"
     }
 }

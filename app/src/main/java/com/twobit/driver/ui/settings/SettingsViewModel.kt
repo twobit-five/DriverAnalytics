@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -21,6 +22,7 @@ class SettingsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _settings.value = settingsManager.getSettings()
+            Log.d(TAG, "Settings retrieved: ${_settings.value}")
         }
     }
 
@@ -28,6 +30,11 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsManager.updateSettings(newSettings)
             _settings.value = newSettings
+            Log.d(TAG, "Settings updated!")
         }
+    }
+
+    companion object {
+        private const val TAG = "SettingsViewModel"
     }
 }

@@ -1,7 +1,6 @@
 package com.twobit.driver.settings
 
 enum class  SensorType {
-    ACCELEROMETER,
     GYROSCOPE,
     GPS,
     LIGHT,

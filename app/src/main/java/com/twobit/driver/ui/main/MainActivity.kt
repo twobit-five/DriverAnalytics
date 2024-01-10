@@ -82,10 +82,9 @@ data class NavigationItem(
     val route: String
 )
 
-
-//TODO move these to a separate file?
 const val ROUTE_HOME = "home"
 const val ROUTE_EVENT = "event"
+const val ROUTE_LIVE_DATA = "live_data"
 const val ROUTE_INFORMATION = "information"
 const val ROUTE_SETTINGS = "settings"
 
@@ -122,9 +121,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             M3NavigationDrawerTheme {
-
-
-                //TODO create a permision Manager class to handle this. (Which can be used in other activities)
                 val permissionViewModel = viewModel<PermissionViewModel>()
                 val dialogQueue = permissionViewModel.visiblePermissionDialogQueue
 
@@ -166,18 +162,18 @@ class MainActivity : ComponentActivity() {
                             onGoToAppSettingsClick = ::openAppSettings
                         )
                     }
-                }
-
-                MainContent()
             }
+
+            MainContent()
         }
     }
+}
 
 fun Activity.openAppSettings() {
-        Intent(
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.fromParts("package", packageName, null)
-        ).also(::startActivity)
+    Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", packageName, null)
+    ).also(::startActivity)
 }
 
 
@@ -204,6 +200,12 @@ fun MainContent() {
             selectedIcon = Icons.Filled.Info,
             unselectedIcon = Icons.Outlined.Info,
             route = ROUTE_EVENT
+        ),
+        NavigationItem(
+            title = "Live Data",
+            selectedIcon = Icons.Filled.Info,
+            unselectedIcon = Icons.Outlined.Info,
+            route = ROUTE_LIVE_DATA
         ),
         NavigationItem(
             title = "Information",
@@ -309,6 +311,14 @@ fun MainContent() {
                             )
                         }
                         composable(
+                            route = ROUTE_LIVE_DATA
+                        ) {
+                            HomeScreen( //TODO change to LiveDataScreen
+                                navController = navController,
+                                viewModel = homeViewModel
+                            )
+                        }
+                        composable(
                             route = ROUTE_INFORMATION
                         ) {
                             InformationScreen(
@@ -338,5 +348,3 @@ fun MainContent() {
 fun MainContentPreview() {
     MainContent()
 }
-
-

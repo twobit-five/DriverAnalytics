@@ -72,7 +72,7 @@ fun SettingsScreen(
                         )
                         SensorToggleSettings(
                             currentSensorSettings = it.sensors.filterKeys { sensorType ->
-                                sensorType in listOf(SensorType.ACCELEROMETER, SensorType.GRAVITY, SensorType.GYROSCOPE, SensorType.ACCELERATION)
+                                sensorType in listOf(SensorType.ACCELERATION, SensorType.GRAVITY, SensorType.GYROSCOPE)
                             },
                             onSensorToggled = { sensorType, isEnabled ->
                                 val updatedSensors = it.sensors.toMutableMap().apply {

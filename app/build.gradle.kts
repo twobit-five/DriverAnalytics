@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.twobit.driver"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.twobit.driver"
@@ -101,7 +101,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:20.0.0")
 
     // Health Connect
-    implementation("androidx.health.connect:connect-client:1.0.0-alpha11")
+    implementation ("androidx.health.connect:connect-client:1.1.0-alpha02")
 
     // Settings
     implementation("androidx.datastore:datastore:1.0.0")

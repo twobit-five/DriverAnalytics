@@ -5,6 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import com.twobit.driver.data.entities.SensorData
 import com.twobit.driver.data.repository.Repository
 import kotlinx.coroutines.CoroutineScope
@@ -21,6 +22,8 @@ abstract class AndroidSensor(
     private val repository: Repository,
 ): MeasurableSensor(sensorType, measurementName, unitOfMeasurement), SensorEventListener {
 
+    private val TAG = "AndroidSensor"
+
     override val doesSensorExist: Boolean
         get() = sensorFeature?.let { feature ->
             context.packageManager.hasSystemFeature(feature)
@@ -35,7 +38,10 @@ abstract class AndroidSensor(
     private var sensor: Sensor? = null
 
     override fun startListening() {
-        if(!doesSensorExist) return
+        if(!doesSensorExist) {
+            Log.d(TAG, "Sensor does not exist: $sensorType")
+            return
+        }
 
         if (!::sensorManager.isInitialized && sensor == null) {
             sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -48,8 +54,8 @@ abstract class AndroidSensor(
                 SensorManager.SENSOR_DELAY_NORMAL
             )
         }
+        Log.d(TAG, "Started listening to sensor: $sensorType")
     }
-
 
     override fun stopListening() {
         if(!doesSensorExist || !::sensorManager.isInitialized) {
@@ -57,6 +63,7 @@ abstract class AndroidSensor(
         }
 
         sensorManager.unregisterListener(this)
+        Log.d(TAG, "Stopped listening to sensor: $sensorType")
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -81,8 +88,10 @@ abstract class AndroidSensor(
             )
         }
 
+        // Called too often
+        //Log.d(TAG, "Sensor data: $sensorData")
+
         // Save it to the database
-        //TODO report useful logging data.
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 if (sensorData != null) {
@@ -90,14 +99,13 @@ abstract class AndroidSensor(
                 }
             } catch (e: Exception) {
                 // Log or handle database insertion error
-                e.printStackTrace()
+                Log.e(TAG, "Error inserting sensor data into database", e)
             }
         }
 
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // Do nothing
-
+        Log.e(TAG, "On Accuracy Changed: $sensor, $accuracy")
     }
 }

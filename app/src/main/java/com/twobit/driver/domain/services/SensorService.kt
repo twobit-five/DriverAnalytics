@@ -30,9 +30,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 @AndroidEntryPoint
-//TODO change name if decide to keep (GPS) location in this service
 public class SensorService : Service() {
 
     @Inject
@@ -54,7 +54,6 @@ public class SensorService : Service() {
     @Inject
     lateinit var proximitySensor: ProximitySensor
 
-
     @Inject
     lateinit var repository: Repository
 
@@ -68,37 +67,34 @@ public class SensorService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        // TODO - Inject this
-        // TODO evaluate whether we should use a separate service for location.
+        Log.d(TAG, "Service created")
+
         locationClient = DefaultLocationClient(applicationContext, LocationServices.getFusedLocationProviderClient(applicationContext))
 
-        // Collect location updates
         serviceScope.launch {
             locationClient.getLocationUpdates(1000L).collect { location ->
                 val locationData = LocationData(
                     latitude = location.latitude,
                     longitude = location.longitude,
                     accuracy = location.accuracy,
-                    timestamp = System.currentTimeMillis() // or location.time if it suits your needs
+                    timestamp = System.currentTimeMillis()
                 )
                 repository.insertLocationData(locationData)
             }
         }
 
-        // Create a notification channel and start the service in the foreground
-        //TODO build an informative notification! add more context etc.
         createNotificationChannel()
         val notification: Notification = NotificationCompat.Builder(this, "SensorServiceChannel")
             .setContentTitle("Sensor Service")
             .setContentText("Collecting sensor data...")
-            // ... other notification settings ...
             .build()
 
         startForeground(1, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Start listening to sensor data
+        Log.d(TAG, "Service started")
+
         lightSensor.startListening()
         accelerometerSensor.startListening()
         gyroscopeSensor.startListening()
@@ -115,7 +111,8 @@ public class SensorService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
-        // Stop listening to sensor data
+        Log.d(TAG, "Service destroyed")
+
         lightSensor.stopListening()
         accelerometerSensor.stopListening()
         gyroscopeSensor.stopListening()

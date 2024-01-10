@@ -10,6 +10,7 @@ import com.twobit.driver.di.LightSensorQualifier
 import com.twobit.driver.domain.sensors.MeasurableSensor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import android.util.Log
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -24,11 +25,16 @@ class HomeViewModel @Inject constructor(
     val lightSensorValue: LiveData<String> get() = _lightSensorValue
 
     init {
+        Log.d(TAG, "Initializing HomeViewModel")
         lightSensor.startListening()
         lightSensor.setOnSensorValuesChangedListener { values ->
             val lux = values[0]
             isDark = lux < 60f
             _lightSensorValue.value = lux.toString()
         }
+    }
+
+    companion object {
+        private const val TAG = "HomeViewModel"
     }
 }
