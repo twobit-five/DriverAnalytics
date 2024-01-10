@@ -66,7 +66,7 @@ Note: All available sensors are currently stored in the database.  Only those se
 
 ![Screenshot_20240109_203903](https://github.com/twobit-five/DriverAnalytics/assets/69398054/1ffc2b69-9974-4211-a73f-c5a21588021b)
 
-![Screenshot_20240109_203916](https://github.com/twobit-five/DriverAnalytics/assets/69398054/d25be218-fffa-46f9-a583-e1ecf2920c05)
+![Screenshot_20240109_210311](https://github.com/twobit-five/DriverAnalytics/assets/69398054/628903b5-1d12-4660-838e-226d3acc957b)
 
 ![Screenshot_20240109_203930](https://github.com/twobit-five/DriverAnalytics/assets/69398054/0a72487c-c79a-43b9-a682-9752807c1543)
 
