@@ -61,6 +61,9 @@ Not yet implemented
 ## Current Screenshots
 
 ### Settings Screen
+Note: All available sensors are currently stored in the database.  Only those selected in the settings menu are used to create events.
+
+
 ![Screenshot_20240109_203903](https://github.com/twobit-five/DriverAnalytics/assets/69398054/1ffc2b69-9974-4211-a73f-c5a21588021b)
 
 ![Screenshot_20240109_203916](https://github.com/twobit-five/DriverAnalytics/assets/69398054/d25be218-fffa-46f9-a583-e1ecf2920c05)
