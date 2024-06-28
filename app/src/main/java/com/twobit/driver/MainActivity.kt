@@ -1,4 +1,4 @@
-package com.twobit.driver.ui.main
+package com.twobit.driver
 
 import android.Manifest
 import android.provider.Settings
@@ -55,13 +55,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.twobit.driver.domain.bluetooth.BluetoothBroadcastReceiver
 import com.twobit.driver.settings.SettingsManager
-import com.twobit.driver.ui.event.EventScreen
-import com.twobit.driver.ui.event.EventViewModel
 import com.twobit.driver.ui.home.HomeScreen
 import com.twobit.driver.ui.home.HomeViewModel
 import com.twobit.driver.ui.info.InformationScreen
+import com.twobit.driver.ui.livedata.LiveDataScreen
+import com.twobit.driver.ui.livedata.LiveDataViewModel
 import com.twobit.driver.ui.permisions.CameraPermissionTextProvider
 import com.twobit.driver.ui.permisions.PermissionDialog
 import com.twobit.driver.ui.permisions.PermissionViewModel
@@ -83,7 +82,6 @@ data class NavigationItem(
 )
 
 const val ROUTE_HOME = "home"
-const val ROUTE_EVENT = "event"
 const val ROUTE_LIVE_DATA = "live_data"
 const val ROUTE_INFORMATION = "information"
 const val ROUTE_SETTINGS = "settings"
@@ -97,9 +95,6 @@ class MainActivity : ComponentActivity() {
     )
 
     @Inject
-    lateinit var bluetoothBroadcastReceiver: BluetoothBroadcastReceiver
-
-    @Inject
     lateinit var settingsManager: SettingsManager
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -111,7 +106,6 @@ class MainActivity : ComponentActivity() {
         val intentFilter = IntentFilter().apply {
             addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
         }
-        registerReceiver(bluetoothBroadcastReceiver, intentFilter)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent)
@@ -185,7 +179,7 @@ fun MainContent() {
     val navController = rememberNavController()
 
     val homeViewModel = viewModel<HomeViewModel>()
-    val eventViewModel = viewModel<EventViewModel>()
+    val liveDataViewModel = viewModel<LiveDataViewModel>()
     val settingsViewModel = viewModel<SettingsViewModel>()
 
     val items = listOf(
@@ -194,12 +188,6 @@ fun MainContent() {
             selectedIcon = Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home,
             route = ROUTE_HOME
-        ),
-        NavigationItem(
-            title = "Event",
-            selectedIcon = Icons.Filled.Info,
-            unselectedIcon = Icons.Outlined.Info,
-            route = ROUTE_EVENT
         ),
         NavigationItem(
             title = "Live Data",
@@ -302,20 +290,13 @@ fun MainContent() {
                                 viewModel = homeViewModel
                             )
                         }
-                        composable(
-                            route = ROUTE_EVENT
-                        ) {
-                            EventScreen(
-                                navController = navController,
-                                viewModel = eventViewModel,
-                            )
-                        }
+
                         composable(
                             route = ROUTE_LIVE_DATA
                         ) {
-                            HomeScreen( //TODO change to LiveDataScreen
-                                navController = navController,
-                                viewModel = homeViewModel
+                            LiveDataScreen(
+                                //navController = navController,
+                                viewModel = liveDataViewModel
                             )
                         }
                         composable(

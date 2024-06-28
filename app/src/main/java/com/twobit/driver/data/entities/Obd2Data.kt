@@ -3,13 +3,15 @@ package com.twobit.driver.data.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "location_data")
-data class LocationData(
+@Entity(tableName = "obd2_data")
+data class Obd2Data(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val timestamp: Long,
     val readLatency: Long,
-    val latitude: Double,
-    val longitude: Double,
-    val accuracy: Float,
+    val rpm: Int?,
+    val speed: Int?,
+    val fuelLevel: Float?,
+    val engineLoad: Float?,
+    val coolantTemperature: Float?,
     val isUploaded: Boolean = false
 )

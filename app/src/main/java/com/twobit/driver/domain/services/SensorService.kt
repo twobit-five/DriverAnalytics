@@ -9,34 +9,22 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import com.google.android.gms.location.LocationServices
-import com.twobit.driver.data.entities.LocationData
-import com.twobit.driver.domain.sensors.LightSensor
-import com.twobit.driver.data.repository.Repository
-import com.twobit.driver.domain.location.DefaultLocationClient
-import com.twobit.driver.domain.location.LocationClient
-import com.twobit.driver.domain.sensors.AmbientTemperatureSensor
-import com.twobit.driver.domain.sensors.BarometerSensor
-import com.twobit.driver.domain.sensors.GravitySensor
-import com.twobit.driver.domain.sensors.GyroscopeSensor
-import com.twobit.driver.domain.sensors.LinearAccelerationSensor
-import com.twobit.driver.domain.sensors.MagnetometerSensor
-import com.twobit.driver.domain.sensors.ProximitySensor
-import com.twobit.driver.domain.sensors.RelativeHumiditySensor
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import com.twobit.driver.data.entities.PhoneSensorData
+import com.twobit.driver.domain.sensors.*
+//import com.twobit.driver.domain.workers.MqttPublisherWorker
+import com.twobit.driver.data.repository.PhoneSensorDataRepository
+import com.twobit.driver.data.repository.LocationDataRepository
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import android.util.Log
 
 @AndroidEntryPoint
-public class SensorService : Service() {
+class SensorService : Service() {
 
-    @Inject
-    lateinit var lightSensor: LightSensor
     @Inject
     lateinit var accelerometerSensor: LinearAccelerationSensor
     @Inject
@@ -45,20 +33,15 @@ public class SensorService : Service() {
     lateinit var gyroscopeSensor: GyroscopeSensor
     @Inject
     lateinit var magnetometerSensor: MagnetometerSensor
-    @Inject
-    lateinit var barometerSensor: BarometerSensor
-    @Inject
-    lateinit var ambientTemperatureSensor: AmbientTemperatureSensor
-    @Inject
-    lateinit var relativeHumiditySensor: RelativeHumiditySensor
-    @Inject
-    lateinit var proximitySensor: ProximitySensor
 
     @Inject
-    lateinit var repository: Repository
+    lateinit var phoneSensorDataRepository: PhoneSensorDataRepository
+    @Inject
+    lateinit var locationDataRepository: LocationDataRepository
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private lateinit var locationClient: LocationClient
+
+    //private lateinit var workManager: WorkManager
 
     override fun onBind(intent: Intent?): IBinder? {
         return null  // Binding not supported
@@ -66,23 +49,6 @@ public class SensorService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-
-        Log.d(TAG, "Service created")
-
-        locationClient = DefaultLocationClient(applicationContext, LocationServices.getFusedLocationProviderClient(applicationContext))
-
-        serviceScope.launch {
-            locationClient.getLocationUpdates(1000L).collect { location ->
-                val locationData = LocationData(
-                    latitude = location.latitude,
-                    longitude = location.longitude,
-                    accuracy = location.accuracy,
-                    timestamp = System.currentTimeMillis()
-                )
-                repository.insertLocationData(locationData)
-            }
-        }
-
         createNotificationChannel()
         val notification: Notification = NotificationCompat.Builder(this, "SensorServiceChannel")
             .setContentTitle("Sensor Service")
@@ -90,20 +56,25 @@ public class SensorService : Service() {
             .build()
 
         startForeground(1, notification)
+
+        //workManager = WorkManager.getInstance(this)
+        //val request = PeriodicWorkRequestBuilder<MqttPublisherWorker>(15, TimeUnit.MINUTES)
+        //    .build()
+        //WorkManager.getInstance(this@SensorService).enqueue(request)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "Service started")
+        startListeningToSensors()
 
-        lightSensor.startListening()
-        accelerometerSensor.startListening()
-        gyroscopeSensor.startListening()
-        magnetometerSensor.startListening()
-        barometerSensor.startListening()
-        gravitySensor.startListening()
-        ambientTemperatureSensor.startListening()
-        relativeHumiditySensor.startListening()
-        proximitySensor.startListening()
+
+        serviceScope.launch {
+            while (isActive) {
+                val phoneData = collectAndStorePhoneSensorData()
+                delay(100)
+
+            }
+        }
+
 
         return START_NOT_STICKY
     }
@@ -111,21 +82,62 @@ public class SensorService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
-        Log.d(TAG, "Service destroyed")
-
-        lightSensor.stopListening()
-        accelerometerSensor.stopListening()
-        gyroscopeSensor.stopListening()
-        magnetometerSensor.stopListening()
-        barometerSensor.stopListening()
-        gravitySensor.stopListening()
-        ambientTemperatureSensor.stopListening()
-        relativeHumiditySensor.stopListening()
-        proximitySensor.stopListening()
+        stopListeningToSensors()
 
         serviceScope.cancel()
     }
 
+    private fun startListeningToSensors() {
+        accelerometerSensor.startListening()
+        gravitySensor.startListening()
+        gyroscopeSensor.startListening()
+        magnetometerSensor.startListening()
+    }
+
+    private fun stopListeningToSensors() {
+        accelerometerSensor.stopListening()
+        gravitySensor.stopListening()
+        gyroscopeSensor.stopListening()
+        magnetometerSensor.stopListening()
+    }
+
+    private suspend fun collectAndStorePhoneSensorData(): PhoneSensorData {
+        val timestamp = System.currentTimeMillis()
+
+        val accelerometerData = accelerometerSensor.getCurrentData()
+        val gyroscopeData = gyroscopeSensor.getCurrentData()
+        val magnetometerData = magnetometerSensor.getCurrentData()
+
+        val readLatency = System.currentTimeMillis() - timestamp
+
+        val phoneSensorData = PhoneSensorData(
+            id = 0,
+            timestamp = timestamp,
+            readLatency = readLatency, // Add your latency calculation logic here
+            accelerometerX = accelerometerData?.get(0),
+            accelerometerY = accelerometerData?.get(1),
+            accelerometerZ = accelerometerData?.get(2),
+            gyroscopeX = gyroscopeData?.get(0),
+            gyroscopeY = gyroscopeData?.get(1),
+            gyroscopeZ = gyroscopeData?.get(2),
+            magnetometerX = magnetometerData?.get(0),
+            magnetometerY = magnetometerData?.get(1),
+            magnetometerZ = magnetometerData?.get(2),
+            isUploaded = false
+        )
+
+        //TODO separate the collecting and storing functionality
+        phoneSensorDataRepository.insert(phoneSensorData)
+        return phoneSensorData
+    }
+/*
+    private fun enqueueUploadWorker() {
+        val uploadWorkRequest = OneTimeWorkRequestBuilder<MqttPublisherWorker>()
+            .setInputData(workDataOf("repository" to phoneSensorDataRepository))
+            .build()
+        WorkManager.getInstance(this).enqueue(uploadWorkRequest)
+    }
+*/
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
@@ -137,11 +149,5 @@ public class SensorService : Service() {
             val manager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(serviceChannel)
         }
-    }
-
-    companion object {
-        private const val TAG = "SensorService"
-        const val ACTION_START = "ACTION_START"
-        const val ACTION_STOP = "ACTION_STOP"
     }
 }

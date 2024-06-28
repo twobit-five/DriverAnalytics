@@ -23,10 +23,6 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = viewModel()) {
 
-    val isDark = viewModel.isDark
-    val lightSensorValue by viewModel.lightSensorValue.observeAsState("N/A")
-
-
     Box(modifier = Modifier.fillMaxSize()) {
 
         Column(
@@ -37,13 +33,6 @@ fun HomeScreen(
             Text(  // Background text
                 text = "Welcome to Driver Analytics",
                 //style = MaterialTheme.typography.h6,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))  // Adds space between the text elements
-
-            Text(  // Light sensor value text
-                text = "Light Sensor Value: $lightSensorValue",
-                //style = MaterialTheme.typography.body1,
             )
         }
 
