@@ -5,11 +5,8 @@ import android.provider.Settings
 import com.twobit.driver.domain.services.SensorService
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.bluetooth.BluetoothAdapter
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -42,9 +39,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -103,15 +100,8 @@ class MainActivity : ComponentActivity() {
 
         val serviceIntent = Intent(this, SensorService::class.java)
 
-        val intentFilter = IntentFilter().apply {
-            addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent)
-        } else {
-            startService(serviceIntent)
-        }
+        startForegroundService(serviceIntent)
 
         setContent {
             M3NavigationDrawerTheme {
@@ -217,7 +207,7 @@ fun MainContent() {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
         var selectedItemIndex by rememberSaveable {
-            mutableStateOf(0)
+            mutableIntStateOf(0)
         }
         ModalNavigationDrawer(
             drawerContent = {
