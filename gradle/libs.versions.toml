@@ -26,6 +26,7 @@ roomVersion = "2.6.1"
 runtimeLivedata = "1.6.8"
 workRuntimeKtx = "2.9.0"
 hiltAndroidPlugin = "2.51.1"
+kotlinobdVersion = "1.3.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -62,6 +63,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+kotlin-obd-api = {module = "com.github.eltonvs:kotlin-obd-api", version.ref = "kotlinobdVersion"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidApplication" }

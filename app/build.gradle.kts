@@ -115,6 +115,10 @@ dependencies {
 
     // WorkManager with Coroutines
     implementation(libs.androidx.work.runtime.ktx)
+
+    //Kotlin OBD API by eltonvs
+    implementation("com.github.eltonvs:kotlin-obd-api:1.3.0")
+    //implementation(libs.kotlin.obd.api) TODO lines 29 and 66 of libs.versions
 }
 
 kapt {
