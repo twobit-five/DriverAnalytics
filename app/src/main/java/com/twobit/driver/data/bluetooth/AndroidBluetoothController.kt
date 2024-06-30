@@ -10,8 +10,8 @@ import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import com.plcoding.bluetoothchat.data.chat.BluetoothStateReceiver
-import com.plcoding.bluetoothchat.data.chat.FoundDeviceReceiver
+import com.twobit.driver.data.bluetooth.BluetoothStateReceiver
+import com.twobit.driver.data.bluetooth.FoundDeviceReceiver
 import com.twobit.driver.domain.bluetooth.BluetoothController
 import com.twobit.driver.domain.bluetooth.BluetoothDeviceDomain
 import com.twobit.driver.domain.bluetooth.BluetoothMessage

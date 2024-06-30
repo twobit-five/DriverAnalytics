@@ -1,4 +1,4 @@
-package com.plcoding.bluetoothchat.data.chat
+package com.twobit.driver.data.bluetooth
 
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
