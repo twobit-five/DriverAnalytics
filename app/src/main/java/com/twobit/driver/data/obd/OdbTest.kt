@@ -8,22 +8,23 @@ import com.github.eltonvs.obd.command.engine.RPMCommand
 import com.github.eltonvs.obd.command.engine.SpeedCommand
 import com.github.eltonvs.obd.connection.ObdDeviceConnection
 
-const val TAG: String = "OBDModule"
-
 class OdbTest (
     private val socket: BluetoothSocket
 ) {
 
     private val obdConnection = ObdDeviceConnection(socket.inputStream, socket.outputStream)
 
-    //to run each time the device is connected
-    suspend fun onOBDConnect(){
+    //creating functions for commands to be called on button press
+
+    suspend fun resetAdapter(){
         val runResetAdapterCommand = obdConnection.run(ResetAdapterCommand())
         Log.i("ObdTest", "Reset Adapter Response: $runResetAdapterCommand")
-
-        //FIXME val runAvailablePIDsCommand = obdConnection.run(AvailablePIDsCommand())
-        //Log.i("ObdTest", "Available Commands Response: $runAvailablePIDsCommand")
     }
+
+//    suspend fun searchCommands() {
+//        val runAvailablePIDsCommand = obdConnection.run(AvailablePIDsCommand())
+//        Log.i("ObdTest", "Available Commands Response: $runAvailablePIDsCommand")
+//    }
 
     //to run while collecting data
     suspend fun onDataCollect(){
