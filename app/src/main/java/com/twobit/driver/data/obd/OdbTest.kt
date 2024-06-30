@@ -38,11 +38,4 @@ class OdbTest (
         val tempRPM = obdConnection.run(RPMCommand())
         Log.i("ObdTest", "OBD2 Response: $tempRPM")
     }
-
-    companion object {
-        fun getVIN() {
-            val runVINCommand = obdConnection.run(VINCommand())
-            Log.i("ObdTest", "VIN: $runVINCommand")
-        }
-    }
 }

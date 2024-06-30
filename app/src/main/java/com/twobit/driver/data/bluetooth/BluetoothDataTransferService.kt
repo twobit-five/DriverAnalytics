@@ -1,6 +1,8 @@
 package com.twobit.driver.data.bluetooth
 
 import android.bluetooth.BluetoothSocket
+import android.util.Log
+import com.github.eltonvs.obd.command.control.VINCommand
 import com.github.eltonvs.obd.connection.ObdDeviceConnection
 import com.twobit.driver.domain.bluetooth.BluetoothMessage
 import com.twobit.driver.domain.bluetooth.ConnectionResult
@@ -15,6 +17,13 @@ import java.io.IOException
 class BluetoothDataTransferService(
     private val socket: BluetoothSocket
 ) {
+    private val obdConnection = ObdDeviceConnection(socket.inputStream, socket.outputStream)
+
+    suspend fun getVIN(){
+        val runVINCommand = obdConnection.run(VINCommand())
+        Log.i("ObdTest", "VIN: $runVINCommand")
+    }
+
     fun listenForIncomingMessages(): Flow<BluetoothMessage> {
         return flow {
             if(!socket.isConnected) {

@@ -1,6 +1,5 @@
 package com.twobit.driver.ui.bluetooth.components
 
-import android.bluetooth.BluetoothSocket
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,12 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.twobit.driver.data.obd.OdbTest
 import com.twobit.driver.domain.bluetooth.BluetoothDevice
 import com.twobit.driver.ui.bluetooth.BluetoothUiState
 
@@ -46,6 +43,11 @@ fun DeviceScreen(
             Button(onClick = onStopScan) {
                 Text(text = "Stop scan")
             }
+            Button(onClick = {
+                //getVIN() //FIXME
+                println("BUTTON PRESSED") }) {
+                Text(text = "Get VIN")
+            }
         }
     }
 }
@@ -77,15 +79,5 @@ fun BluetoothDeviceList(
                     .padding(16.dp)
             )
         }
-    }
-}
-
-@Composable
-fun TestButton(){
-    val ObdTest = remember{ OdbTest()) }
-    //todo pass ObdTest instance a BluetoothSocket (need to secure the bluetooth socket)
-
-    Button(onClick = { OdbTest.getVIN() }) {
-        Text("Click Me")
     }
 }
