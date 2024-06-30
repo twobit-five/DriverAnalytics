@@ -11,5 +11,7 @@ fun InformationScreen(
     navController: NavController,
     viewModel: HomeViewModel = viewModel()) {
 
+
+
     Text(text = "Information Screen")
 }
