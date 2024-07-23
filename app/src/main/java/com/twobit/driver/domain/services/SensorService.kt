@@ -35,8 +35,6 @@ class SensorService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    //private lateinit var workManager: WorkManager
-
     override fun onBind(intent: Intent?): IBinder? {
         return null  // Binding not supported
     }
@@ -50,11 +48,6 @@ class SensorService : Service() {
             .build()
 
         startForeground(1, notification)
-
-        //workManager = WorkManager.getInstance(this)
-        //val request = PeriodicWorkRequestBuilder<MqttPublisherWorker>(15, TimeUnit.MINUTES)
-        //    .build()
-        //WorkManager.getInstance(this@SensorService).enqueue(request)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -123,14 +116,7 @@ class SensorService : Service() {
         phoneSensorDataRepository.insert(phoneSensorData)
         return phoneSensorData
     }
-/*
-    private fun enqueueUploadWorker() {
-        val uploadWorkRequest = OneTimeWorkRequestBuilder<MqttPublisherWorker>()
-            .setInputData(workDataOf("repository" to phoneSensorDataRepository))
-            .build()
-        WorkManager.getInstance(this).enqueue(uploadWorkRequest)
-    }
-*/
+
     private fun createNotificationChannel() {
     val serviceChannel = NotificationChannel(
         "SensorServiceChannel",

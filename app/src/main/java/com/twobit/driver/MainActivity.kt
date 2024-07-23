@@ -48,10 +48,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.work.Configuration
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.twobit.driver.domain.mqtt.HiveMQHelper
+import com.twobit.driver.domain.workers.SensorDataUploadWorker
 import com.twobit.driver.settings.SettingsManager
 import com.twobit.driver.ui.home.HomeScreen
 import com.twobit.driver.ui.home.HomeViewModel
@@ -68,6 +75,7 @@ import com.twobit.driver.ui.settings.SettingsViewModel
 import com.twobit.driver.ui.theme.M3NavigationDrawerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 data class NavigationItem(
@@ -94,14 +102,26 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var settingsManager: SettingsManager
 
+    @Inject
+    lateinit var workManager: WorkManager
+
+    @Inject
+    lateinit var hiveMQHelper: HiveMQHelper
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val serviceIntent = Intent(this, SensorService::class.java)
-
-
         startForegroundService(serviceIntent)
+
+        val uploadWorkRequest = PeriodicWorkRequestBuilder<SensorDataUploadWorker>(15, TimeUnit.MINUTES)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            "SensorDataUpload",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            uploadWorkRequest
+        )
 
         setContent {
             M3NavigationDrawerTheme {
