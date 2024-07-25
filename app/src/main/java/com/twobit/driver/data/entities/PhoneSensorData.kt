@@ -19,5 +19,6 @@ data class PhoneSensorData(
     val magnetometerZ: Float?,
     val light: Float?,
     val compassHeading: Float?,
+    val proximity: Float?,
     val isUploaded: Boolean = false
 )

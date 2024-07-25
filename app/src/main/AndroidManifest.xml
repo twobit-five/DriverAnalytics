@@ -46,7 +46,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.M3NavigationDrawer"
         tools:targetApi="31">
-        android:enableOnBackInvokedCallback="true">
 
         <activity
             android:name="com.twobit.driver.MainActivity"

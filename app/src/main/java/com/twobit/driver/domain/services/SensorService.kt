@@ -32,6 +32,8 @@ class SensorService : Service() {
     lateinit var lightSensor: LightSensor
     @Inject
     lateinit var accelerometerSensor: AccelerometerSensor
+    @Inject
+    lateinit var proximitySensor: ProximitySensor
 
     @Inject
     lateinit var phoneSensorDataRepository: PhoneSensorDataRepository
@@ -85,6 +87,7 @@ class SensorService : Service() {
         magnetometerSensor.startListening()
         lightSensor.startListening()
         accelerometerSensor.startListening()
+        proximitySensor.startListening()
     }
 
     private fun stopListeningToSensors() {
@@ -94,6 +97,7 @@ class SensorService : Service() {
         magnetometerSensor.stopListening()
         lightSensor.stopListening()
         accelerometerSensor.stopListening()
+        proximitySensor.stopListening()
     }
 
     private fun calculateHeading(accelerometerData: FloatArray, magnetometerData: FloatArray): Float {
@@ -122,6 +126,7 @@ class SensorService : Service() {
         val magnetometerData = magnetometerSensor.getCurrentData()
         val lightData = lightSensor.getCurrentData()
         val accelerometerData = accelerometerSensor.getCurrentData()
+        val proximityData = proximitySensor.getCurrentData()
 
         // Calculate compass heading
         val heading = if (linearAccelerometerData != null && magnetometerData != null) {
@@ -147,6 +152,7 @@ class SensorService : Service() {
             magnetometerZ = magnetometerData?.get(2),
             light = lightData?.get(0),
             compassHeading = heading,
+            proximity = proximityData?.get(0),
             isUploaded = false
         )
 

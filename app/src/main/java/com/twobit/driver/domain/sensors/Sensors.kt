@@ -70,3 +70,14 @@ class AccelerometerSensor @Inject constructor(
     measurementName = "Acceleration",
     unitOfMeasurement = "m/s^2"
 )
+
+class ProximitySensor @Inject constructor(
+    @ApplicationContext context: Context
+) : AndroidSensor(
+    context = context,
+    sensorFeature = PackageManager.FEATURE_SENSOR_PROXIMITY,
+    sensorType = Sensor.TYPE_PROXIMITY,
+    sensorCategory = "ENVIRONMENT",
+    measurementName = "Proximity",
+    unitOfMeasurement = "cm"
+)

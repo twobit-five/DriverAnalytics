@@ -40,6 +40,7 @@ fun LiveDataScreen(
             Text(text = "Magnetometer Z: ${data.magnetometerZ}")
             Text(text = "Light: ${data.light}")
             Text(text = "Compass Heading: ${data.compassHeading}")
+            Text(text = "Proximity: ${data.proximity}")
         }
     }
 }
