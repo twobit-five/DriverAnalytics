@@ -8,8 +8,7 @@ import com.twobit.driver.data.entities.*
 @Database(
     entities = [
         Obd2Data::class,
-        ImuData::class,
-        GpsData::class,
+        RemoteSensorData::class,
         PhoneSensorData::class,
         LocationData::class
     ],
@@ -18,8 +17,7 @@ import com.twobit.driver.data.entities.*
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun obd2DataDao(): Obd2DataDao
-    abstract fun imuDataDao(): ImuDataDao
-    abstract fun gpsDataDao(): GpsDataDao
+    abstract fun remoteSensorDataDao(): RemoteDataDao
     abstract fun phoneSensorDataDao(): PhoneSensorDataDao
     abstract fun locationDataDao(): LocationDataDao
 }

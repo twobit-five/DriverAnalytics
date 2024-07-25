@@ -60,3 +60,13 @@ class MagnetometerSensor @Inject constructor(
     measurementName = "Magnetic Field",
     unitOfMeasurement = "μT"
 )
+class AccelerometerSensor @Inject constructor(
+    @ApplicationContext context: Context
+) : AndroidSensor(
+    context = context,
+    sensorFeature = PackageManager.FEATURE_SENSOR_ACCELEROMETER,
+    sensorType = Sensor.TYPE_ACCELEROMETER,
+    sensorCategory = "MOTION",
+    measurementName = "Acceleration",
+    unitOfMeasurement = "m/s^2"
+)

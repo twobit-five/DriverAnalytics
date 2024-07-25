@@ -54,7 +54,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.work.Configuration
+import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.twobit.driver.domain.mqtt.HiveMQHelper
@@ -115,11 +117,20 @@ class MainActivity : ComponentActivity() {
         val serviceIntent = Intent(this, SensorService::class.java)
         startForegroundService(serviceIntent)
 
-        val uploadWorkRequest = PeriodicWorkRequestBuilder<SensorDataUploadWorker>(15, TimeUnit.MINUTES)
+        // Define constraints for the work
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
+
+        val uploadWorkRequest = PeriodicWorkRequestBuilder<SensorDataUploadWorker>(5, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .setInitialDelay(15, TimeUnit.SECONDS)
+            .build()
+
         workManager.enqueueUniquePeriodicWork(
             "SensorDataUpload",
-            ExistingPeriodicWorkPolicy.REPLACE,
+            //ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.UPDATE,
             uploadWorkRequest
         )
 

@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.hardware.SensorManager
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.twobit.driver.data.entities.PhoneSensorData
@@ -20,13 +21,17 @@ import javax.inject.Inject
 class SensorService : Service() {
 
     @Inject
-    lateinit var accelerometerSensor: LinearAccelerationSensor
+    lateinit var linerarAccelerometerSensor: LinearAccelerationSensor
     @Inject
     lateinit var gravitySensor: GravitySensor
     @Inject
     lateinit var gyroscopeSensor: GyroscopeSensor
     @Inject
     lateinit var magnetometerSensor: MagnetometerSensor
+    @Inject
+    lateinit var lightSensor: LightSensor
+    @Inject
+    lateinit var accelerometerSensor: AccelerometerSensor
 
     @Inject
     lateinit var phoneSensorDataRepository: PhoneSensorDataRepository
@@ -74,25 +79,56 @@ class SensorService : Service() {
     }
 
     private fun startListeningToSensors() {
-        accelerometerSensor.startListening()
+        linerarAccelerometerSensor.startListening()
         gravitySensor.startListening()
         gyroscopeSensor.startListening()
         magnetometerSensor.startListening()
+        lightSensor.startListening()
+        accelerometerSensor.startListening()
     }
 
     private fun stopListeningToSensors() {
-        accelerometerSensor.stopListening()
+        linerarAccelerometerSensor.stopListening()
         gravitySensor.stopListening()
         gyroscopeSensor.stopListening()
         magnetometerSensor.stopListening()
+        lightSensor.stopListening()
+        accelerometerSensor.stopListening()
+    }
+
+    private fun calculateHeading(accelerometerData: FloatArray, magnetometerData: FloatArray): Float {
+        val rotationMatrix = FloatArray(9)
+        val orientationAngles = FloatArray(3)
+
+        SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerData, magnetometerData)
+        SensorManager.getOrientation(rotationMatrix, orientationAngles)
+
+        // orientationAngles[0] contains the azimuth in radians
+        val azimuth = orientationAngles[0]
+        // Convert azimuth to degrees
+        var azimuthDegrees = Math.toDegrees(azimuth.toDouble()).toFloat()
+
+        azimuthDegrees = (azimuthDegrees + 360) % 360
+
+        return azimuthDegrees
     }
 
     private suspend fun collectAndStorePhoneSensorData(): PhoneSensorData {
         val timestamp = System.currentTimeMillis()
 
-        val accelerometerData = accelerometerSensor.getCurrentData()
+
+        val linearAccelerometerData = linerarAccelerometerSensor.getCurrentData()
         val gyroscopeData = gyroscopeSensor.getCurrentData()
         val magnetometerData = magnetometerSensor.getCurrentData()
+        val lightData = lightSensor.getCurrentData()
+        val accelerometerData = accelerometerSensor.getCurrentData()
+
+        // Calculate compass heading
+        val heading = if (linearAccelerometerData != null && magnetometerData != null) {
+            accelerometerData?.let { calculateHeading(it.toFloatArray(), magnetometerData.toFloatArray()) }
+        } else {
+            null
+        }
 
         val readLatency = System.currentTimeMillis() - timestamp
 
@@ -100,15 +136,17 @@ class SensorService : Service() {
             id = 0,
             timestamp = timestamp,
             readLatency = readLatency, // Add your latency calculation logic here
-            accelerometerX = accelerometerData?.get(0),
-            accelerometerY = accelerometerData?.get(1),
-            accelerometerZ = accelerometerData?.get(2),
+            accelerometerX = linearAccelerometerData?.get(0),
+            accelerometerY = linearAccelerometerData?.get(1),
+            accelerometerZ = linearAccelerometerData?.get(2),
             gyroscopeX = gyroscopeData?.get(0),
             gyroscopeY = gyroscopeData?.get(1),
             gyroscopeZ = gyroscopeData?.get(2),
             magnetometerX = magnetometerData?.get(0),
             magnetometerY = magnetometerData?.get(1),
             magnetometerZ = magnetometerData?.get(2),
+            light = lightData?.get(0),
+            compassHeading = heading,
             isUploaded = false
         )
 

@@ -21,15 +21,10 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideImuDataRepository(db: AppDatabase): ImuDataRepository {
-        return ImuDataRepository(db.imuDataDao())
+    fun provideRemoteSensorDataRepository(db: AppDatabase): RemoteSensorDataRepository {
+        return RemoteSensorDataRepository(db.remoteSensorDataDao())
     }
 
-    @Provides
-    @Singleton
-    fun provideGpsDataRepository(db: AppDatabase): GpsDataRepository {
-        return GpsDataRepository(db.gpsDataDao())
-    }
 
     @Provides
     @Singleton
