@@ -12,6 +12,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+//TODO Uppload all other sensor data
 @HiltWorker
 class SensorDataUploadWorker @AssistedInject constructor(
     @Assisted context: Context,

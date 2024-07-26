@@ -8,17 +8,23 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.SensorManager
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.google.android.gms.location.LocationServices
+import com.twobit.driver.data.entities.LocationData
 import com.twobit.driver.data.entities.PhoneSensorData
 import com.twobit.driver.domain.sensors.*
 import com.twobit.driver.data.repository.PhoneSensorDataRepository
 import com.twobit.driver.data.repository.LocationDataRepository
+import com.twobit.driver.domain.location.DefaultLocationClient
+import com.twobit.driver.domain.location.LocationClient
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SensorService : Service() {
+    private val TAG = "SensorService"
 
     @Inject
     lateinit var linerarAccelerometerSensor: LinearAccelerationSensor
@@ -41,6 +47,7 @@ class SensorService : Service() {
     lateinit var locationDataRepository: LocationDataRepository
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private lateinit var locationClient: LocationClient
 
     override fun onBind(intent: Intent?): IBinder? {
         return null  // Binding not supported
@@ -54,26 +61,50 @@ class SensorService : Service() {
             .setContentText("Collecting sensor data...")
             .build()
 
+        locationClient = DefaultLocationClient(applicationContext, LocationServices.getFusedLocationProviderClient(applicationContext))
+
+        serviceScope.launch {
+            locationClient.getLocationUpdates(100L).collect { location ->
+                val locationData = LocationData(
+                    latitude = location.latitude,
+                    longitude = location.longitude,
+                    accuracy = location.accuracy,
+                    altitude = location.altitude,
+                    bearing = location.bearing,
+                    bearingAccuracy = location.bearingAccuracyDegrees,
+                    speed = location.speed,
+                    speedAccuracy = location.speedAccuracyMetersPerSecond,
+                    timestamp = System.currentTimeMillis()
+                )
+                locationDataRepository.insert(locationData)
+            }
+        }
+
         startForeground(1, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startListeningToSensors()
+        //log the start of the service
 
+        Log.e(TAG, "Starting SensorService")
+        startListeningToSensors()
+        locationClient = DefaultLocationClient(applicationContext, LocationServices.getFusedLocationProviderClient(applicationContext))
 
         serviceScope.launch {
+            Log.e(TAG, "Starting coroutine")
             while (isActive) {
-                val phoneData = collectAndStorePhoneSensorData()
+                val phoneSensorData = collectPhoneSensorData()
+                phoneSensorDataRepository.insert(phoneSensorData)
                 delay(100)
             }
         }
-
 
         return START_NOT_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.e(TAG, "Stopping SensorService")
 
         stopListeningToSensors()
 
@@ -81,6 +112,7 @@ class SensorService : Service() {
     }
 
     private fun startListeningToSensors() {
+        Log.e(TAG, "Starting listening to sensors")
         linerarAccelerometerSensor.startListening()
         gravitySensor.startListening()
         gyroscopeSensor.startListening()
@@ -91,6 +123,7 @@ class SensorService : Service() {
     }
 
     private fun stopListeningToSensors() {
+        Log.e(TAG, "Stopping listening to sensors")
         linerarAccelerometerSensor.stopListening()
         gravitySensor.stopListening()
         gyroscopeSensor.stopListening()
@@ -117,9 +150,8 @@ class SensorService : Service() {
         return azimuthDegrees
     }
 
-    private suspend fun collectAndStorePhoneSensorData(): PhoneSensorData {
+    private fun collectPhoneSensorData(): PhoneSensorData {
         val timestamp = System.currentTimeMillis()
-
 
         val linearAccelerometerData = linerarAccelerometerSensor.getCurrentData()
         val gyroscopeData = gyroscopeSensor.getCurrentData()
@@ -140,7 +172,7 @@ class SensorService : Service() {
         val phoneSensorData = PhoneSensorData(
             id = 0,
             timestamp = timestamp,
-            readLatency = readLatency, // Add your latency calculation logic here
+            readLatency = readLatency,
             accelerometerX = linearAccelerometerData?.get(0),
             accelerometerY = linearAccelerometerData?.get(1),
             accelerometerZ = linearAccelerometerData?.get(2),
@@ -156,8 +188,6 @@ class SensorService : Service() {
             isUploaded = false
         )
 
-        //TODO separate the collecting and storing functionality
-        phoneSensorDataRepository.insert(phoneSensorData)
         return phoneSensorData
     }
 
@@ -167,7 +197,7 @@ class SensorService : Service() {
         "Sensor Service Channel",
         NotificationManager.IMPORTANCE_LOW
     )
-
+    Log.e(TAG, "Creating notification channel")
     val manager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     manager.createNotificationChannel(serviceChannel)
 }

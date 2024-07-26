@@ -66,11 +66,13 @@ class HiveMQHelper(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     fun connectAndPublish(topic: String, payload: String) {
         ensureConnected()
         publish(topic, payload)
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun ensureConnected() {
         if (!isConnected.get()) {
             Log.i("HiveMQHelper", "Not connected. Attempting to reconnect...")
@@ -81,6 +83,7 @@ class HiveMQHelper(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun reconnect(retryCount: Int) {
         var attempts = 0
         while (attempts < retryCount && !isConnected.get()) {

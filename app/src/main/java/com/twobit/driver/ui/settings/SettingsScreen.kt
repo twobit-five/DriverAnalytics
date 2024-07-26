@@ -52,7 +52,7 @@ fun SettingsScreen(
                         )
                         SensorToggleSettings(
                             currentSensorSettings = it.sensors.filterKeys { sensorType ->
-                                sensorType in listOf(SensorType.LIGHT, SensorType.PRESSURE, SensorType.AMBIENT_TEMPERATURE, SensorType.RELATIVE_HUMIDITY)
+                                sensorType in listOf(SensorType.LIGHT)
                             },
                             onSensorToggled = { sensorType, isEnabled ->
                                 val updatedSensors = it.sensors.toMutableMap().apply {

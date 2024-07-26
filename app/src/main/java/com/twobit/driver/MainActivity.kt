@@ -6,10 +6,10 @@ import com.twobit.driver.domain.services.SensorService
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
@@ -48,12 +48,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.work.HiltWorkerFactory
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.work.Configuration
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -67,11 +66,6 @@ import com.twobit.driver.ui.home.HomeViewModel
 import com.twobit.driver.ui.info.InformationScreen
 import com.twobit.driver.ui.livedata.LiveDataScreen
 import com.twobit.driver.ui.livedata.LiveDataViewModel
-import com.twobit.driver.ui.permisions.CameraPermissionTextProvider
-import com.twobit.driver.ui.permisions.PermissionDialog
-import com.twobit.driver.ui.permisions.PermissionViewModel
-import com.twobit.driver.ui.permisions.PhoneCallPermissionTextProvider
-import com.twobit.driver.ui.permisions.RecordAudioPermissionTextProvider
 import com.twobit.driver.ui.settings.SettingsScreen
 import com.twobit.driver.ui.settings.SettingsViewModel
 import com.twobit.driver.ui.theme.M3NavigationDrawerTheme
@@ -96,11 +90,6 @@ const val ROUTE_SETTINGS = "settings"
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val permissionsToRequest = arrayOf(
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.CALL_PHONE,
-    )
-
     @Inject
     lateinit var settingsManager: SettingsManager
 
@@ -110,12 +99,18 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var hiveMQHelper: HiveMQHelper
 
+    private val locationPermissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+            startSensorService()
+        }
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val serviceIntent = Intent(this, SensorService::class.java)
-        startForegroundService(serviceIntent)
 
         // Define constraints for the work
         val constraints = Constraints.Builder()
@@ -134,61 +129,31 @@ class MainActivity : ComponentActivity() {
             uploadWorkRequest
         )
 
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            startSensorService()
+        } else {
+            locationPermissionRequest.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+        }
+
         setContent {
             M3NavigationDrawerTheme {
-                val permissionViewModel = viewModel<PermissionViewModel>()
-                val dialogQueue = permissionViewModel.visiblePermissionDialogQueue
 
-                val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.RequestMultiplePermissions()
-                ) { perms ->
-                    permissionsToRequest.forEach { permission ->
-                        val isGranted = perms[permission] == true
-                        permissionViewModel.onPermissionResult(permission, isGranted)
-                    }
-                }
-
-                dialogQueue
-                    .reversed()
-                    .forEach { permission ->
-                        PermissionDialog(
-                            permissionTextProvider = when (permission) {
-                                Manifest.permission.CAMERA -> {
-                                    CameraPermissionTextProvider()
-                                }
-                                Manifest.permission.RECORD_AUDIO -> {
-                                    RecordAudioPermissionTextProvider()
-                                }
-                                Manifest.permission.CALL_PHONE -> {
-                                    PhoneCallPermissionTextProvider()
-                                }
-                                else -> return@forEach
-                            },
-                            isPermanentlyDeclined = !shouldShowRequestPermissionRationale(
-                                permission
-                            ),
-                            onDismiss = permissionViewModel::dismissDialog,
-                            onOkClick = {
-                                permissionViewModel.dismissDialog()
-                                multiplePermissionResultLauncher.launch(
-                                    arrayOf(permission)
-                                )
-                            },
-                            onGoToAppSettingsClick = ::openAppSettings
-                        )
-                    }
             }
 
             MainContent()
         }
-    }
-}
 
-fun Activity.openAppSettings() {
-    Intent(
-        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-        Uri.fromParts("package", packageName, null)
-    ).also(::startActivity)
+
+    }
+
+    private fun startSensorService() {
+        val serviceIntent = Intent(this, SensorService::class.java)
+        startForegroundService(serviceIntent)
+    }
 }
 
 
